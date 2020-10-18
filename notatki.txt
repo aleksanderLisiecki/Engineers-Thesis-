@@ -1,0 +1,12 @@
+1) Taking a photo (make_a_photo.py)
+2) Collecting points from live-view and write it by hand in txt file(getting_points_by_video_with_coordinates.py and points.txt)
+3) Showing points on image (show_points_on_image.py) - 3 & 4 is an alternative 
+4) Drawing taken points on images (draw_points_on_image.py)
+5) Function to get an points from given file (read_points_from_file.py)
+
+
+I ended on:
+
+In workfile hello.py I start write an whole colorpicking alghoritm.
+Now I made an point's getting part of code...
+and I'm focused on photo's history code.
