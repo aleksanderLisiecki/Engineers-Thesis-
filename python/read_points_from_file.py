@@ -1,5 +1,4 @@
 
-
 def read_points_from_file(file = '/home/alex/inzynierka/python/points.txt'):
     """This function gets an file with points on cube and return 2 dim array with x & y points 
     """

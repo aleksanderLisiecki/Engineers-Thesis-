@@ -15,9 +15,9 @@ coords = [[],[]]
 coords_down = []
 coords_up = []
 
-from read_points_from_file import read_points_from_file
+import read_points_from_file
 
-coords = [coords_down, coords_up] = read_points_from_file(PATH + 'python/points.txt')
+coords = [coords_down, coords_up] = read_points_from_file.read_points_from_file(PATH + 'data/points.txt')
 
 
 #save old photos in history
@@ -30,10 +30,12 @@ photo_history.set_path(PATH)
 photo_history.save_history()
 
 #make a photo
+import make_a_photo
 
+make_a_photo.make_a_photo('/dev/video0', '/dev/video0')
 
+#take the color values and save it
 
-#odczytaj wartosci i zapisz je do pliku 
 
 
 #obróć ściankę 
