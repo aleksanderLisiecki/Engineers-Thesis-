@@ -1,8 +1,10 @@
 1) Taking a photo (make_a_photo.py)
 2) Collecting points from live-view and write it by hand in txt file(getting_points_by_video_with_coordinates.py and points.txt)
-3) Showing points live preview (show_points_on_image.py)
+3) Showing points(show_points_on_image.py)
 4) Drawing taken points on images (draw_points_on_image.py)
 5) Function to get an points from given file (read_points_from_file.py)
+6) Make history of photos (history.py)
+7) Take an colors from photo (colors.py)
 
 
 I ended on:
@@ -14,3 +16,9 @@ and I'm focused on photo's history code.
 In main.py I start write an whole colorpicking alghoritm.
 Now I made an history
 and I go for making an new photo.
+
+Photo - made.
+
+Colors picking form photo - check.
+
+Now I'm focused on assigning picked colors to lists, and right transformations for cube permutations.

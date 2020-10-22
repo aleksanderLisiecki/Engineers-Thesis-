@@ -1,6 +1,6 @@
 import cv2
 
-f = open('/home/alex/inzynierka/python/points.txt', 'r')
+f = open('/home/alex/inzynierka/data/points.txt', 'r')
 
 coords_down = []
 coords_up = []

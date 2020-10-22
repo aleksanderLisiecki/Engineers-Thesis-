@@ -26,6 +26,7 @@ def overwrite_photo(overwritten_photo, number):
     def rename_cube_photo(upOrDown):
         im = Image.open(path + 'img/cube_' + upOrDown + '_' + overwritten_photo + ('_'+str(number-1) if (number > 0) else '') + '.jpg')
         im.save(path + 'img/cube_' + upOrDown + '_old_' + str(number) + '.jpg')
+        im.close()
     try:
         rename_cube_photo('down')
         rename_cube_photo('up')
