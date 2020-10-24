@@ -12,15 +12,7 @@ path = '/home/alex/inzynierka/'
 
 number_of_photos_in_history = 5
 
-def set_number_of_photos_in_history(number):
-    global number_of_photos_in_history
-    number_of_photos_in_history = number
-
-def set_path(p):
-    global path
-    path = p
-
-def overwrite_photo(overwritten_photo, number):
+def _overwrite_photo(overwritten_photo, number):
     """Naming way: 'cube_down/up_' + overwritten_photo + '.jpg'"""
 
     def rename_cube_photo(upOrDown):
@@ -36,7 +28,7 @@ def overwrite_photo(overwritten_photo, number):
 def save_history():
     global number_of_photos_in_history
     while number_of_photos_in_history > 0:
-        overwrite_photo('old', number_of_photos_in_history)
+        _overwrite_photo('old', number_of_photos_in_history)
         number_of_photos_in_history -= 1
 
-    overwrite_photo('new', 0)
+    _overwrite_photo('new', 0)

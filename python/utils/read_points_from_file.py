@@ -1,8 +1,12 @@
 
-def read_points_from_file(file = '/home/alex/inzynierka/python/points.txt'):
+def read_points_from_file(file = '/home/alex/inzynierka/data/points.txt'):
     """This function gets an file with points on cube and return 2 dim array with x & y points 
     """
-    f = open(file, 'r')
+    try:
+        f = open(file, 'r')
+    except FileNotFoundError:
+        print("File " + file + " not found")
+        return False
     coords_down = []
     coords_up = []
     i = 0
