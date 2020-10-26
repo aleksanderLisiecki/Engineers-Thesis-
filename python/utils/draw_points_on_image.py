@@ -1,4 +1,8 @@
 from PIL import Image, ImageDraw
+import points as read
+
+PATH = '/home/alex/inzynierka/'
+
 
 def draw_elipse(draw, x, y, color = (255, 0, 0), radius = 5, width = 3):
     """This function draw an ellipse on given image. 
@@ -13,23 +17,12 @@ def draw_elipse(draw, x, y, color = (255, 0, 0), radius = 5, width = 3):
     y1 = y + radius
     draw.ellipse([(x0, y0),(x1, y1)], None, color, width)
 
-
-f = open('/home/alex/inzynierka/data/points.txt', 'r')
-
 coords_down = []
 coords_up = []
-i = 0
-for line in f:
-    point = line.split()
-    if i > 1 and i < 26:
-        coords_down.append(int(point[0]))
-        coords_down.append(int(point[1]))
-    elif i > 28 and i < 53:
-        coords_up.append(int(point[0]))
-        coords_up.append(int(point[1]))
-    i += 1
-    
-f.close()
+
+[coords_down, coords_up] = read.read_points_from_file(PATH + 'data/points.txt')
+
+
 
 im = Image.open('/home/alex/inzynierka/img/kostka_dol.png')
 draw = ImageDraw.Draw(im)
@@ -49,7 +42,7 @@ im.close()
 im = Image.open('/home/alex/inzynierka/img/kostka_gora.png')
 draw = ImageDraw.Draw(im)
 
-m = 0
+# m = 0
 for i in range(0, len(coords_up), 2):
     draw_elipse(draw, coords_up[i], coords_up[i+1])
     n+=1
