@@ -1,4 +1,5 @@
 import cv2
+# pylint: disable=maybe-no-member
 
 f = open('/home/alex/inzynierka/data/points.txt', 'r')
 
