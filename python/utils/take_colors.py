@@ -4,7 +4,7 @@ def take_colors(coords, image_path):
     try:
         im = Image.open(image_path)
     except FileNotFoundError:
-        print("File cube_down_" + image_path + " not found")
+        print("File cube_xxx_" + image_path + " not found")
         return
     colors = []
     for i in range(0, len(coords), 2):

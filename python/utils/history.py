@@ -8,25 +8,27 @@
 
 from PIL import Image, ImageDraw
 
-path = '/home/alex/inzynierka/'
+PATH = '/home/pi/inzynierka/img/cube_photos'
 
-number_of_photos_in_history = 5
+
 
 def _overwrite_photo(overwritten_photo, number):
     """Naming way: 'cube_down/up_' + overwritten_photo + '.jpg'"""
 
     def rename_cube_photo(upOrDown):
-        im = Image.open(path + 'img/cube_' + upOrDown + '_' + overwritten_photo + ('_'+str(number-1) if (number > 0) else '') + '.jpg')
-        im.save(path + 'img/cube_' + upOrDown + '_old_' + str(number) + '.jpg')
+        im = Image.open(PATH + '/cube_' + upOrDown + '_' + overwritten_photo + ('_'+str(number-1) if (number > 0) else '') + '.jpg')
+        im.save(PATH + '/cube_' + upOrDown + '_old_' + str(number) + '.jpg')
         im.close()
+        
     try:
         rename_cube_photo('down')
         rename_cube_photo('up')
     except FileNotFoundError:
-        print("File cube_down_" + overwritten_photo + ('_'+str(number-1) if (number > 0) else '') + ".jpg not found")
+        pass
+        # print("File cube_down_" + overwritten_photo + ('_'+str(number-1) if (number > 0) else '') + ".jpg not found")
 
 def save_history():
-    global number_of_photos_in_history
+    number_of_photos_in_history = 10
     while number_of_photos_in_history > 0:
         _overwrite_photo('old', number_of_photos_in_history)
         number_of_photos_in_history -= 1

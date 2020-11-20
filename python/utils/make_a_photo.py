@@ -1,7 +1,10 @@
 import time
 from cv2 import cv2
 
-def make_a_photo(dev1 = "/dev/video0", dev2 = "/dev/video0"):
+PATH = '/home/pi/inzynierka/img/cube_photos'
+
+
+def make_a_photo(cam_down = "/dev/video0", cam_up = "/dev/video0", number = 0):
     frame_count = 8
     def capture(dev, destination, frame_count):
         photo_ready = False
@@ -10,10 +13,11 @@ def make_a_photo(dev1 = "/dev/video0", dev2 = "/dev/video0"):
             time.sleep(0.1)
             for i in range(frame_count):
                 return_value, image = camera.read()
-            photo_ready = cv2.imwrite("img/cube_"+destination+"_new.jpg", image)
+            file_location = PATH+"/cube_"+destination+"_"+str(number)+".png"
+            photo_ready = cv2.imwrite(file_location, image)
             del(camera)
     
-    capture(dev1, 'down', 8)   #change to video2
-    capture(dev2, 'up', 8)   #change to video4
+    capture(cam_down, 'down', 8)   #change to video2
+    capture(cam_up, 'up', 8)   #change to video4
     return True
     
