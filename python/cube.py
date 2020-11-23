@@ -20,6 +20,7 @@ from PIL import Image, ImageDraw
 from utils import points as read
 from utils import take_colors
 from utils import make_a_photo
+from utils import make_a_photo_and_take_colors
 from utils import history
 from utils import draw_points_on_image
 
@@ -52,10 +53,8 @@ class Cube:
         yaml_file_path = self.PATH+"data/yaml_files/"+"scrambles_"+timestr+".yaml"
         data = {}
 
-        for key in range(25):
+        for key in range(1):
             self.cube, scramble = self.random_scramble(self.cube)
-            # data, last_key_number = self.yaml_loader(self.YAML_FILE_PATH)
-            # key_number = last_key_number + 1
 
             print(key)
             
@@ -70,16 +69,17 @@ class Cube:
                 scramble_cmd += s
             print(scramble_cmd)
             ser.write(scramble_cmd.encode())
-            
+            response = ""
             while response != "done":
                 response = self.wait_for_response(ser)
-            response = ""
+            
 
             # while response != "button_pressed":
             #     response = self.wait_for_response(ser)
 
 
             ser.write("kalibracja".encode())
+            response = ""
             while response != "done":
                 response = self.wait_for_response(ser)
 
@@ -91,7 +91,7 @@ class Cube:
                 
 
                 if perms[i] != 0:
-                    self.make_photo(i) # take a new photo
+                    self.colors_on_photo = self.make_a_photo_and_take_colors(i) # take a new photo
                 else:
                     time.sleep(0.1)
 
@@ -100,11 +100,12 @@ class Cube:
                 
 
                 if perms[i] != 0:
-                    self.colors_on_photo = self.take_colors(i)  # read colors from taken photo   
+                    # self.colors_on_photo = self.take_colors(i)  # read colors from taken photo
                     self.colors_on_cube, self.cube_transform = self.assign_colors(self.colors_on_photo, perms[i])   # make an transformations of the perms
+                    print(self.colors_on_cube)
                     data[key]['collected_colors'][i] = self.colors_on_cube
-                    self.draw_cube(self.colors_on_cube, i)  # draw flat view of the photos
-                    self.draw_points_on_photo(i)
+                    # self.draw_cube(self.colors_on_cube, i)  # draw flat view of the photos
+                    # self.draw_points_on_photo(i)
 
                 response = ""
                 while response != "done":
@@ -161,8 +162,10 @@ class Cube:
         return coords
 
     def make_photo(self, number):
-        # history.save_history()
-        make_a_photo.make_a_photo("/dev/video2", "/dev/video0", number)
+        return make_a_photo.make_a_photo("/dev/video2", "/dev/video0", number)
+
+    def make_a_photo_and_take_colors(self, number):
+        return make_a_photo_and_take_colors.make_a_photo_and_take_colors(self.coords_down, self.coords_up, "/dev/video2", "/dev/video0", number)
 
     def draw_points_on_photo(self, image_number):
         cube_transformation = self._transformations_table('NORMAL') 
