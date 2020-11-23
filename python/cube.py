@@ -26,7 +26,6 @@ from utils import draw_points_on_image
 class Cube:
 
     PATH = '/home/pi/inzynierka/'
-    YAML_FILE_PATH = PATH + "data/scrambles.yaml"
 
     coords = [[],[]]
     coords_down = []
@@ -39,38 +38,46 @@ class Cube:
     cube = ['w']*9 + ['r']*9 + ['y']*9 + ['o']*9 + ['b']*9 + ['g']*9
 
     def __init__(self):
-        for i in range(20):
-            cube, scramble = self.random_scramble(self.cube)
-            data, last_key_number = self.yaml_loader(self.YAML_FILE_PATH)
-            key_number = last_key_number + 1
-            print(key_number)
-                    
-            data[key_number] = {}
-            data[key_number]['colors'] = cube
-            data[key_number]['collected_colors']={}
+        
+        self.coords = self.read_points()  # get coords of the points 
+        ser = serial.Serial("/dev/rfcomm0", baudrate=9600)
+
+        response = ""
+        ser.write("connected?".encode())
+        while response != "connected":
+            response = self.wait_for_response(ser)
+
+
+        timestr = time.strftime("%Y_%m_%d-%H_%M_%S")
+        yaml_file_path = self.PATH+"data/yaml_files/"+"scrambles_"+timestr+".yaml"
+        data = {}
+
+        for key in range(25):
+            self.cube, scramble = self.random_scramble(self.cube)
+            # data, last_key_number = self.yaml_loader(self.YAML_FILE_PATH)
+            # key_number = last_key_number + 1
+
+            print(key)
+            
+            data[key] = {}
+            data[key]['scramble'] = scramble
+            data[key]['colors'] = self.cube
+            data[key]['collected_colors']={}
 
             
-
-            self.coords = self.read_points()  # get coords of the points 
-            
-            ser = serial.Serial("/dev/rfcomm1", baudrate=9600)
-
-            response = ""
-            ser.write("connected?".encode())
-            while response != "connected":
-                response = self.wait_for_response(ser)
-                
             scramble_cmd = ">"
             for s in scramble:
                 scramble_cmd += s
             print(scramble_cmd)
             ser.write(scramble_cmd.encode())
+            
             while response != "done":
                 response = self.wait_for_response(ser)
-
+            response = ""
 
             # while response != "button_pressed":
             #     response = self.wait_for_response(ser)
+
 
             ser.write("kalibracja".encode())
             while response != "done":
@@ -85,31 +92,58 @@ class Cube:
 
                 if perms[i] != 0:
                     self.make_photo(i) # take a new photo
-                    print("Zrobilem zdjecie nr: " + str(i))
-                    
+                else:
+                    time.sleep(0.1)
+
+                 
                 ser.write(commands[int((i)/4)].encode())
+                
 
                 if perms[i] != 0:
                     self.colors_on_photo = self.take_colors(i)  # read colors from taken photo   
                     self.colors_on_cube, self.cube_transform = self.assign_colors(self.colors_on_photo, perms[i])   # make an transformations of the perms
-                    data[key_number]['collected_colors'][i] = self.colors_on_cube
+                    data[key]['collected_colors'][i] = self.colors_on_cube
                     self.draw_cube(self.colors_on_cube, i)  # draw flat view of the photos
-                    # self.draw_points_on_photo(i)
+                    self.draw_points_on_photo(i)
 
                 response = ""
                 while response != "done":
                     response = self.wait_for_response(ser)
+                response = ""
                     
 
             end = time.time()
             print("time: " + str(end - start))
 
-            ser.write("wysrodkuj".encode())
-            response = ""
-            while response != "done":
-                response = self.wait_for_response(ser)
+            
+            self.yaml_dump(yaml_file_path , data)   
 
-            self.yaml_dump(self.YAML_FILE_PATH, data)
+
+        ser.write("wysrodkuj".encode())
+        response = ""
+        while response != "done":
+            response = self.wait_for_response(ser)
+
+        time.sleep(1)
+
+        ser.write("wysrodkuj".encode())
+        response = ""
+        while response != "done":
+            response = self.wait_for_response(ser)
+        ser.write("wysrodkuj".encode())
+
+        time.sleep(1)
+
+        response = ""
+        while response != "done":
+            response = self.wait_for_response(ser)
+        ser.write("wysrodkuj".encode())
+        response = ""
+        while response != "done":
+            response = self.wait_for_response(ser)
+ 
+         
+
 
 
 
@@ -178,7 +212,7 @@ class Cube:
     def random_scramble(self, cube):
         scramble = []
         random.seed()
-        for i in range(15):
+        for i in range(10):
             scramble.append(random.choice('FBRLUD'))
 
         colors_after_scramble = cube[:]
