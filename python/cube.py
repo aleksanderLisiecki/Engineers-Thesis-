@@ -41,12 +41,12 @@ class Cube:
     def __init__(self):
         
         self.coords = self.read_points()  # get coords of the points 
-        ser = serial.Serial("/dev/rfcomm0", baudrate=9600)
+        # ser = serial.Serial("/dev/rfcomm0", baudrate=9600)
 
-        response = ""
-        ser.write("connected?".encode())
-        while response != "connected":
-            response = self.wait_for_response(ser)
+        # response = ""
+        # ser.write("connected?".encode())
+        # while response != "connected":
+        #     response = self.wait_for_response(ser)
 
 
         timestr = time.strftime("%Y_%m_%d-%H_%M_%S")
@@ -68,20 +68,20 @@ class Cube:
             for s in scramble:
                 scramble_cmd += s
             print(scramble_cmd)
-            ser.write(scramble_cmd.encode())
-            response = ""
-            while response != "done":
-                response = self.wait_for_response(ser)
+            # ser.write(scramble_cmd.encode())
+            # response = ""
+            # while response != "done":
+            #     response = self.wait_for_response(ser)
             
 
             # while response != "button_pressed":
             #     response = self.wait_for_response(ser)
 
 
-            ser.write("kalibracja".encode())
-            response = ""
-            while response != "done":
-                response = self.wait_for_response(ser)
+            # ser.write("kalibracja".encode())
+            # response = ""
+            # while response != "done":
+            #     response = self.wait_for_response(ser)
 
             start = time.time()
 
@@ -96,7 +96,7 @@ class Cube:
                     time.sleep(0.1)
 
                  
-                ser.write(commands[int((i)/4)].encode())
+                # ser.write(commands[int((i)/4)].encode())
                 
 
                 if perms[i] != 0:
@@ -107,10 +107,9 @@ class Cube:
                     # self.draw_cube(self.colors_on_cube, i)  # draw flat view of the photos
                     # self.draw_points_on_photo(i)
 
-                response = ""
-                while response != "done":
-                    response = self.wait_for_response(ser)
-                response = ""
+                # response = ""
+                # while response != "done":
+                #     response = self.wait_for_response(ser)
                     
 
             end = time.time()
@@ -120,10 +119,10 @@ class Cube:
             self.yaml_dump(yaml_file_path , data)   
 
 
-        ser.write("wysrodkuj".encode())
-        response = ""
-        while response != "done":
-            response = self.wait_for_response(ser)
+        # ser.write("wysrodkuj".encode())
+        # response = ""
+        # while response != "done":
+        #     response = self.wait_for_response(ser)
 
         time.sleep(1)
 

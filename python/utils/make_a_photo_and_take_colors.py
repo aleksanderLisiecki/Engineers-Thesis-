@@ -17,7 +17,7 @@ def make_a_photo_and_take_colors(coords_down, coords_up, cam_down = "/dev/video0
         colors = []
         for i in range(0, len(coords), 2):
             pix = image[coords[i+1], coords[i]]
-            colors.append((pix[2],pix[1],pix[0]))
+            colors.append((int(pix[2]),int(pix[1]),int(pix[0])))
         del(camera)
         return colors
     
