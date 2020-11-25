@@ -41,19 +41,19 @@ class Cube:
     def __init__(self):
         
         self.coords = self.read_points()  # get coords of the points 
-        # ser = serial.Serial("/dev/rfcomm0", baudrate=9600)
+        ser = serial.Serial("/dev/rfcomm0", baudrate=9600)
 
-        # response = ""
-        # ser.write("connected?".encode())
-        # while response != "connected":
-        #     response = self.wait_for_response(ser)
+        response = ""
+        ser.write("connected?".encode())
+        while response != "connected":
+            response = self.wait_for_response(ser)
 
 
         timestr = time.strftime("%Y_%m_%d-%H_%M_%S")
         yaml_file_path = self.PATH+"data/yaml_files/"+"scrambles_"+timestr+".yaml"
         data = {}
 
-        for key in range(1):
+        for key in range(50):
             self.cube, scramble = self.random_scramble(self.cube)
 
             print(key)
@@ -68,20 +68,20 @@ class Cube:
             for s in scramble:
                 scramble_cmd += s
             print(scramble_cmd)
-            # ser.write(scramble_cmd.encode())
-            # response = ""
-            # while response != "done":
-            #     response = self.wait_for_response(ser)
+            ser.write(scramble_cmd.encode())
+            response = ""
+            while response != "done":
+                response = self.wait_for_response(ser)
             
 
             # while response != "button_pressed":
             #     response = self.wait_for_response(ser)
 
 
-            # ser.write("kalibracja".encode())
-            # response = ""
-            # while response != "done":
-            #     response = self.wait_for_response(ser)
+            ser.write("kalibracja".encode())
+            response = ""
+            while response != "done":
+                response = self.wait_for_response(ser)
 
             start = time.time()
 
@@ -96,20 +96,20 @@ class Cube:
                     time.sleep(0.1)
 
                  
-                # ser.write(commands[int((i)/4)].encode())
+                ser.write(commands[int((i)/4)].encode())
                 
 
                 if perms[i] != 0:
                     # self.colors_on_photo = self.take_colors(i)  # read colors from taken photo
                     self.colors_on_cube, self.cube_transform = self.assign_colors(self.colors_on_photo, perms[i])   # make an transformations of the perms
-                    print(self.colors_on_cube)
                     data[key]['collected_colors'][i] = self.colors_on_cube
                     # self.draw_cube(self.colors_on_cube, i)  # draw flat view of the photos
                     # self.draw_points_on_photo(i)
 
-                # response = ""
-                # while response != "done":
-                #     response = self.wait_for_response(ser)
+                response = ""
+                while response != "done":
+                    response = self.wait_for_response(ser)
+                response = ""
                     
 
             end = time.time()
@@ -119,10 +119,10 @@ class Cube:
             self.yaml_dump(yaml_file_path , data)   
 
 
-        # ser.write("wysrodkuj".encode())
-        # response = ""
-        # while response != "done":
-        #     response = self.wait_for_response(ser)
+        ser.write("wysrodkuj".encode())
+        response = ""
+        while response != "done":
+            response = self.wait_for_response(ser)
 
         time.sleep(1)
 
