@@ -41,7 +41,7 @@ class Cube:
     def __init__(self):
         
         self.coords = self.read_points()  # get coords of the points 
-        ser = serial.Serial("/dev/rfcomm0", baudrate=9600)
+        ser = serial.Serial("/dev/rfcomm0", baudrate=9600, timeout=20)
 
         response = ""
         ser.write("connected?".encode())
@@ -53,7 +53,7 @@ class Cube:
         yaml_file_path = self.PATH+"data/yaml_files/"+"scrambles_"+timestr+".yaml"
         data = {}
 
-        for key in range(50):
+        for key in range(25):
             self.cube, scramble = self.random_scramble(self.cube)
 
             print(key)
@@ -87,36 +87,39 @@ class Cube:
 
             perms = ['NORMAL','R1O1','R2O2','R3O3', 0,'W1Y1','W2Y2','W3Y3', 0,'B1G1','B2G2','B3G3']
             commands = ['obrotRO', 'obrotWY', 'obrotBG']
-            for i in range(len(perms)):                  
-                
-
-                if perms[i] != 0:
-                    self.colors_on_photo = self.make_a_photo_and_take_colors(i) # take a new photo
-                else:
-                    time.sleep(0.1)
-
-                 
-                ser.write(commands[int((i)/4)].encode())
-                
-
-                if perms[i] != 0:
-                    # self.colors_on_photo = self.take_colors(i)  # read colors from taken photo
-                    self.colors_on_cube, self.cube_transform = self.assign_colors(self.colors_on_photo, perms[i])   # make an transformations of the perms
-                    data[key]['collected_colors'][i] = self.colors_on_cube
-                    # self.draw_cube(self.colors_on_cube, i)  # draw flat view of the photos
-                    # self.draw_points_on_photo(i)
-
-                response = ""
-                while response != "done":
-                    response = self.wait_for_response(ser)
-                response = ""
+            try:
+                for i in range(len(perms)):                  
                     
 
-            end = time.time()
-            print("time: " + str(end - start))
+                    if perms[i] != 0:
+                        self.colors_on_photo = self.make_a_photo_and_take_colors(i) # take a new photo
+                    else:
+                        time.sleep(0.1)
+
+                    
+                    ser.write(commands[int((i)/4)].encode())
+                    
+
+                    if perms[i] != 0:
+                        # self.colors_on_photo = self.take_colors(i)  # read colors from taken photo
+                        self.colors_on_cube, self.cube_transform = self.assign_colors(self.colors_on_photo, perms[i])   # make an transformations of the perms
+                        data[key]['collected_colors'][i] = self.colors_on_cube
+                        # self.draw_cube(self.colors_on_cube, i)  # draw flat view of the photos
+                        # self.draw_points_on_photo(i)
+
+                    response = ""
+                    while response != "done":
+                        response = self.wait_for_response(ser)
+                    response = ""
+                        
+
+                end = time.time()
+                print("time: " + str(end - start))
+            except:
+                self.yaml_dump(yaml_file_path, data)   
 
             
-            self.yaml_dump(yaml_file_path , data)   
+        self.yaml_dump(yaml_file_path, data)   
 
 
         ser.write("wysrodkuj".encode())
