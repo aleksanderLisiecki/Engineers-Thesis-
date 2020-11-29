@@ -53,41 +53,42 @@ class Cube:
         yaml_file_path = self.PATH+"data/yaml_files/"+"scrambles_"+timestr+".yaml"
         data = {}
 
-        for key in range(25):
-            self.cube, scramble = self.random_scramble(self.cube)
+        try:
+            for key in range(50):
+                self.cube, scramble = self.random_scramble(self.cube)
 
-            print(key)
-            
-            data[key] = {}
-            data[key]['scramble'] = scramble
-            data[key]['colors'] = self.cube
-            data[key]['collected_colors']={}
+                print(key)
+                
+                data[key] = {}
+                data[key]['scramble'] = scramble
+                data[key]['colors'] = self.cube
+                data[key]['collected_colors']={}
 
-            
-            scramble_cmd = ">"
-            for s in scramble:
-                scramble_cmd += s
-            print(scramble_cmd)
-            ser.write(scramble_cmd.encode())
-            response = ""
-            while response != "done":
-                response = self.wait_for_response(ser)
-            
+                
+                scramble_cmd = ">"
+                for s in scramble:
+                    scramble_cmd += s
+                print(scramble_cmd)
+                ser.write(scramble_cmd.encode())
+                response = ""
+                while response != "done":
+                    response = self.wait_for_response(ser)
+                
 
-            # while response != "button_pressed":
-            #     response = self.wait_for_response(ser)
+                # while response != "button_pressed":
+                #     response = self.wait_for_response(ser)
 
 
-            ser.write("kalibracja".encode())
-            response = ""
-            while response != "done":
-                response = self.wait_for_response(ser)
+                ser.write("kalibracja".encode())
+                response = ""
+                while response != "done":
+                    response = self.wait_for_response(ser)
 
-            start = time.time()
+                start = time.time()
 
-            perms = ['NORMAL','R1O1','R2O2','R3O3', 0,'W1Y1','W2Y2','W3Y3', 0,'B1G1','B2G2','B3G3']
-            commands = ['obrotRO', 'obrotWY', 'obrotBG']
-            try:
+                perms = ['NORMAL','R1O1','R2O2','R3O3', 0,'W1Y1','W2Y2','W3Y3', 0,'B1G1','B2G2','B3G3']
+                commands = ['obrotRO', 'obrotWY', 'obrotBG']
+                
                 for i in range(len(perms)):                  
                     
 
@@ -115,8 +116,9 @@ class Cube:
 
                 end = time.time()
                 print("time: " + str(end - start))
-            except:
-                self.yaml_dump(yaml_file_path, data)   
+        except:
+            self.yaml_dump(yaml_file_path, data) 
+            return  
 
             
         self.yaml_dump(yaml_file_path, data)   
