@@ -54,7 +54,7 @@ class Cube:
         data = {}
 
         try:
-            for key in range(50):
+            for key in range(25):
                 self.cube, scramble = self.random_scramble(self.cube)
 
                 print(key)
@@ -135,19 +135,7 @@ class Cube:
         response = ""
         while response != "done":
             response = self.wait_for_response(ser)
-        ser.write("wysrodkuj".encode())
-
-        time.sleep(1)
-
-        response = ""
-        while response != "done":
-            response = self.wait_for_response(ser)
-        ser.write("wysrodkuj".encode())
-        response = ""
-        while response != "done":
-            response = self.wait_for_response(ser)
- 
-         
+        ser.write("wysrodkuj".encode())         
 
 
 
