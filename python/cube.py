@@ -54,7 +54,7 @@ class Cube:
         data = {}
 
         try:
-            for key in range(25):
+            for key in range(50):
                 self.cube, scramble = self.random_scramble(self.cube)
 
                 print(key)
@@ -105,6 +105,7 @@ class Cube:
                         # self.colors_on_photo = self.take_colors(i)  # read colors from taken photo
                         self.colors_on_cube, self.cube_transform = self.assign_colors(self.colors_on_photo, perms[i])   # make an transformations of the perms
                         data[key]['collected_colors'][i] = self.colors_on_cube
+                        print(self.colors_on_cube)
                         # self.draw_cube(self.colors_on_cube, i)  # draw flat view of the photos
                         # self.draw_points_on_photo(i)
 
@@ -113,9 +114,21 @@ class Cube:
                         response = self.wait_for_response(ser)
                     response = ""
                         
+                # DESCRAMBLING CUBE
+                # descramble = ">"
+                # for s in scramble[::-1]:
+                #     descramble += str(s)+"\'"
+                # print(descramble)
+                # ser.write(descramble.encode())
+                # response = ""
+                # while response != "done":
+                #     response = self.wait_for_response(ser)
+
 
                 end = time.time()
                 print("time: " + str(end - start))
+
+        
         except:
             self.yaml_dump(yaml_file_path, data) 
             return  
