@@ -49,6 +49,11 @@ class Cube:
             response = self.wait_for_response(ser)
 
 
+        ser.write("kalibracja".encode())
+        response = ""
+        while response != "done":
+            response = self.wait_for_response(ser)
+
         timestr = time.strftime("%Y_%m_%d-%H_%M_%S")
         yaml_file_path = self.PATH+"data/yaml_files/"+"scrambles_"+timestr+".yaml"
         data = {}
@@ -79,10 +84,7 @@ class Cube:
                 #     response = self.wait_for_response(ser)
 
 
-                ser.write("kalibracja".encode())
-                response = ""
-                while response != "done":
-                    response = self.wait_for_response(ser)
+                
 
                 start = time.time()
 
@@ -105,7 +107,7 @@ class Cube:
                         # self.colors_on_photo = self.take_colors(i)  # read colors from taken photo
                         self.colors_on_cube, self.cube_transform = self.assign_colors(self.colors_on_photo, perms[i])   # make an transformations of the perms
                         data[key]['collected_colors'][i] = self.colors_on_cube
-                        print(self.colors_on_cube)
+                        # print(self.colors_on_cube)
                         # self.draw_cube(self.colors_on_cube, i)  # draw flat view of the photos
                         # self.draw_points_on_photo(i)
 
