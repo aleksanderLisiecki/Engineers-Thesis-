@@ -17,9 +17,8 @@ def switch(x):
 
 
 
-
-
-kociemba_cube = "ywbrwgyrbooyyrgobgbrboywwywwgoboggbrgwrrbywwryyrbgogoo"
+# kociemba_cube = "wwwwwwwwwrrrrrrrrryyyyyyyyyooooooooobbbbbbbbbggggggggg"
+kociemba_cube = "yoogwwggrgywrrgwbggoooyrygrwbbyoybbyorbwbbworbyorgwrwy"
 cube = ""
 
 for c in kociemba_cube:
@@ -43,7 +42,8 @@ print(result)
 alg = ">"
 
 for move in result:
-  alg += str(move);
+  if move != " ":
+    alg += str(move);
 
 ser = serial.Serial("/dev/rfcomm0", baudrate=9600, timeout=20)
 ser.write(alg.encode())
