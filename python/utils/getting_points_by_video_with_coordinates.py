@@ -1,6 +1,6 @@
 import cv2
 
-f = open('/home/alex/inzynierka/data/points.txt', 'r')
+f = open('/home/pi/inzynierka/data/points.txt', 'r')
 
 X_coords = []
 Y_coords = []
@@ -16,7 +16,7 @@ f.close()
 
 
 cv2.namedWindow("preview")
-vc = cv2.VideoCapture("/dev/video0")
+vc = cv2.VideoCapture("/dev/video2")
 
 
 center_coords = (166, 204)

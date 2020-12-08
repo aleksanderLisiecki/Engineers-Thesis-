@@ -5,7 +5,7 @@ PATH = '/home/pi/inzynierka/img/cube_photos'
 
 
 def make_a_photo(cam_down = "/dev/video0", cam_up = "/dev/video0", number = 0):
-    frame_count = 8
+    frame_count = 15
     def capture(dev, destination, frame_count):
         photo_ready = False
         while not photo_ready:

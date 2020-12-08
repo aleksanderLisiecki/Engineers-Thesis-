@@ -15,6 +15,9 @@ import serial
 import time
 import random
 import yaml
+import cv2
+
+import sys
 
 from PIL import Image, ImageDraw
 from utils import points as read
@@ -38,27 +41,46 @@ class Cube:
 
     cube = ['w']*9 + ['r']*9 + ['y']*9 + ['o']*9 + ['b']*9 + ['g']*9
 
+    def _init__(self):
+        # filepath = ""
+        # try:
+        #   filepath = sys.argv[1]
+        # except:
+        #   print("Podaj ścieżkę pliku yaml z danymi terningowymi")
+        #   sys.exit()
+
+
+        # data, last_key = self.yaml_loader(filepath)
+
+        # colors = data[last_key]['collected_colors'][0]
+        colors = [(12, 117, 241), (22, 28, 46), (29, 69, 90), (168, 111, 101), 0, (25, 20, 22), (23, 118, 232), (255, 224, 138), (255, 159, 86), (26, 60, 114), (13, 3, 20), (198, 198, 196), (240, 64, 51), 0, (215, 214, 203), (241, 116, 56), (33, 24, 38), (37, 33, 39), (19, 17, 17), (5, 3, 3), (12, 10, 10), (75, 73, 73), 0, (146, 131, 125), (91, 92, 83), (35, 41, 46), (66, 38, 43), (86, 29, 32), (28, 19, 31), (168, 168, 166), (34, 53, 49), 0, (30, 21, 38), (53, 52, 71), (45, 67, 69), (49, 58, 60), (187, 185, 179), (34, 64, 61), (8, 0, 12), (122, 127, 111), 0, (135, 137, 138), (112, 114, 98), (121, 123, 122), (79, 77, 62), (28, 26, 40), (47, 56, 97), (165, 172, 170), (28, 27, 34), 0, (157, 160, 156), (29, 203, 187), (255, 255, 165), (77, 71, 64)]
+        print(colors)
+        self.draw_cube(colors)
+
     def __init__(self):
-        
-        self.coords = self.read_points()  # get coords of the points 
-        ser = serial.Serial("/dev/rfcomm0", baudrate=9600, timeout=20)
-
-        response = ""
-        ser.write("connected?".encode())
-        while response != "connected":
-            response = self.wait_for_response(ser)
-
-
-        ser.write("kalibracja".encode())
-        response = ""
-        while response != "done":
-            response = self.wait_for_response(ser)
-
-        timestr = time.strftime("%Y_%m_%d-%H_%M_%S")
-        yaml_file_path = self.PATH+"data/yaml_files/"+"scrambles_"+timestr+".yaml"
-        data = {}
-
         try:
+            self.coords = self.read_points()  # get coords of the points 
+            ser = serial.Serial("/dev/rfcomm0", baudrate=9600, timeout=20)
+
+            response = ""
+            ser.write("connected?".encode())
+            while response != "connected":
+                response = self.wait_for_response(ser)
+
+
+            ser.write("kalibracja".encode())
+            response = ""
+            while response != "done":
+                response = self.wait_for_response(ser)
+
+            timestr = time.strftime("%Y_%m_%d-%H_%M_%S")
+            yaml_file_path = self.PATH+"data/yaml_files/"+"scrambles_"+timestr+".yaml"
+            data = {}
+
+
+            cam_down = cv2.VideoCapture("/dev/video2") 
+            cam_up = cv2.VideoCapture("/dev/video0") 
+
             for key in range(50):
                 self.cube, scramble = self.random_scramble(self.cube)
 
@@ -95,7 +117,9 @@ class Cube:
                     
 
                     if perms[i] != 0:
-                        self.colors_on_photo = self.make_a_photo_and_take_colors(i) # take a new photo
+                        self.colors_on_photo = self.make_a_photo_and_take_colors(i, cam_down, cam_up) # take a new photo
+                        # self.colors_on_photo = self.make_a_photo_and_take_colors(i) # take a new photo
+                        # self.make_photo(i)
                     else:
                         time.sleep(0.1)
 
@@ -125,32 +149,30 @@ class Cube:
                 # response = ""
                 # while response != "done":
                 #     response = self.wait_for_response(ser)
-
-
-                end = time.time()
-                print("time: " + str(end - start))
-
-        
+            end = time.time()
+            print("time: " + str(end - start))
         except:
-            self.yaml_dump(yaml_file_path, data) 
-            return  
+            del(cam_down)
+            del(cam_up) 
+            self.yaml_dump(yaml_file_path, data)  
+        
 
-            
+        del(cam_down)
+        del(cam_up) 
         self.yaml_dump(yaml_file_path, data)   
 
 
-        ser.write("wysrodkuj".encode())
-        response = ""
-        while response != "done":
-            response = self.wait_for_response(ser)
+        # ser.write("wysrodkuj".encode())
+        # response = ""
+        # while response != "done":
+        #     response = self.wait_for_response(ser)
 
-        time.sleep(1)
+        # time.sleep(1)
 
-        ser.write("wysrodkuj".encode())
-        response = ""
-        while response != "done":
-            response = self.wait_for_response(ser)
-        ser.write("wysrodkuj".encode())         
+        # ser.write("wysrodkuj".encode())
+        # response = ""
+        # while response != "done":
+        #     response = self.wait_for_response(ser)
 
 
 
@@ -160,7 +182,8 @@ class Cube:
         while ser.inWaiting():
                 data = ser.readline()
                 data = data.strip().decode()
-                print(data)
+                if data != 'done':
+                    print(data)
         return data
 
     def read_points(self):
@@ -171,8 +194,11 @@ class Cube:
     def make_photo(self, number):
         return make_a_photo.make_a_photo("/dev/video2", "/dev/video0", number)
 
-    def make_a_photo_and_take_colors(self, number):
-        return make_a_photo_and_take_colors.make_a_photo_and_take_colors(self.coords_down, self.coords_up, "/dev/video2", "/dev/video0", number)
+    def make_a_photo_and_take_colors(self, number, cam_down, cam_up):
+        return make_a_photo_and_take_colors.make_a_photo_and_take_colors(self.coords_down, self.coords_up, cam_down, cam_up, number)
+    
+    # def make_a_photo_and_take_colors(self, number):
+    #     return make_a_photo_and_take_colors.make_a_photo_and_take_colors(self.coords_down, self.coords_up, "/dev/video2", "/dev/video0", number)
 
     def draw_points_on_photo(self, image_number):
         cube_transformation = self._transformations_table('NORMAL') 
@@ -213,7 +239,7 @@ class Cube:
             for j in range(3):
                 x = cube_draw_points_x[int(i/3)*3 + j]
                 draw.rectangle(((x*40,y*40),((x*40)+40,(y*40)+40)), fill=(colors[n]), outline=(0,0,0), width=2)
-                draw.text(((x*40)+16,(y*40)+16),fill=(100,100,100), text=str(self.cube_transform.index(n+1)+1))
+                # draw.text(((x*40)+16,(y*40)+16),fill=(100,100,100), text=str(self.cube_transform.index(n+1)+1))
                 n+=1
         im.save(self.PATH+'img/flat_views/flat_view'+ str(number) +'.png')
         im.close()
