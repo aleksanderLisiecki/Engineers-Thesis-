@@ -18,7 +18,7 @@ def switch(x):
 
 
 # kociemba_cube = "wwwwwwwwwrrrrrrrrryyyyyyyyyooooooooobbbbbbbbbggggggggg"
-kociemba_cube = "oboywbbybbwgrrwrgwrwyryygworrggorbyryggoboybwwoooggybw"
+kociemba_cube = "googwwrroywrgrbbbwybbyywbygywwboroygroogbogrbwrrygoygw"
 cube = ""
 
 for c in kociemba_cube:
