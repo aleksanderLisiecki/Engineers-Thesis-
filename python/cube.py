@@ -82,7 +82,7 @@ class Cube:
             cam_down = cv2.VideoCapture("/dev/video2") 
             cam_up = cv2.VideoCapture("/dev/video0") 
 
-            for key in range(25):
+            for key in range(50):
                 self.cube, scramble = self.random_scramble(self.cube)
 
                 print(key)
