@@ -80,9 +80,9 @@ class Cube:
 
 
             cam_down = cv2.VideoCapture("/dev/video2") 
-            cam_up = cv2.VideoCapture("/dev/video0") 
+            cam_up = cv2.VideoCapture("/dev/video1") 
 
-            for key in range(50):
+            for key in range(25):
                 self.cube, scramble = self.random_scramble(self.cube)
 
                 print(key)
@@ -118,7 +118,7 @@ class Cube:
                     
 
                     if perms[i] != 0:
-                        self.colors_on_photo = self.make_a_photo_and_take_colors(i, cam_down, cam_up) # take a new photo
+                        self.colors_on_photo = self.make_a_photo_and_take_colors(i, cam_down, cam_up)
                         # self.colors_on_photo = self.make_a_photo_and_take_colors(i) # take a new photo
                         # self.make_photo(i)
                     else:
