@@ -6,7 +6,7 @@ X_coords = []
 Y_coords = []
 i = 0
 for line in f:
-    if i > 1 and i < 26:
+    if i > 28 and i < 53:
         point = line.split()
         X_coords.append(int(point[0]))
         Y_coords.append(int(point[1]))
@@ -16,12 +16,12 @@ f.close()
 
 
 cv2.namedWindow("preview")
-vc = cv2.VideoCapture("/dev/video2")
+vc = cv2.VideoCapture("/dev/video0")
 
 
 center_coords = (166, 204)
 radius = 4
-color = (255, 0 ,0) #BGR
+color = (0, 0 ,0) #BGR
 thickness = 2
 
 

@@ -59,107 +59,118 @@ class Cube:
         self.draw_cube(colors)
 
     def __init__(self):
-        try:
-            self.coords = self.read_points()  # get coords of the points 
-            ser = serial.Serial("/dev/rfcomm0", baudrate=9600, timeout=20)
 
-            response = ""
-            ser.write("connected?".encode())
-            while response != "connected":
-                response = self.wait_for_response(ser)
+        cam_down = cv2.VideoCapture("/dev/video2") 
+        cam_up = cv2.VideoCapture("/dev/video0") 
+
+        if cam_up == None:
+            print("cam_up == None")
+            exit()
+        if cam_down == None:
+            print("cam_up == None")
+            exit()   
 
 
-            ser.write("kalibracja".encode())
+        self.coords = self.read_points()  # get coords of the points 
+
+        ser = serial.Serial("/dev/rfcomm0", baudrate=9600, timeout=20)
+
+        response = ""
+        ser.write("connected?".encode())
+        while response != "connected":
+            response = self.wait_for_response(ser)
+
+
+        ser.write("kalibracja".encode())
+        response = ""
+        while response != "done":
+            response = self.wait_for_response(ser)
+
+        timestr = time.strftime("%Y_%m_%d-%H_%M_%S")
+        yaml_file_path = self.PATH+"data/yaml_files/"+"scrambles_"+timestr+".yaml"
+        data = {}
+
+        for key in range(50):
+            self.cube, scramble = self.random_scramble(self.cube)
+
+            print(key)
+            
+            data[key] = {}
+            data[key]['scramble'] = scramble
+            data[key]['colors'] = self.cube
+            data[key]['collected_colors']={}
+
+            
+            scramble_cmd = ">"
+            for s in scramble:
+                scramble_cmd += s
+            print(scramble_cmd)
+            ser.write(scramble_cmd.encode())
             response = ""
             while response != "done":
                 response = self.wait_for_response(ser)
+            
 
-            timestr = time.strftime("%Y_%m_%d-%H_%M_%S")
-            yaml_file_path = self.PATH+"data/yaml_files/"+"scrambles_"+timestr+".yaml"
-            data = {}
+            # while response != "button_pressed":
+            #     response = self.wait_for_response(ser)
 
 
-            cam_down = cv2.VideoCapture("/dev/video2") 
-            cam_up = cv2.VideoCapture("/dev/video1") 
+            
 
-            for key in range(25):
-                self.cube, scramble = self.random_scramble(self.cube)
+            start = time.time()
 
-                print(key)
+            perms = ['NORMAL','R1O1','R2O2','R3O3', 0,'W1Y1','W2Y2','W3Y3', 0,'B1G1','B2G2','B3G3']
+            commands = ['obrotRO', 'obrotWY', 'obrotBG']
+            
+            for i in range(len(perms)):                  
                 
-                data[key] = {}
-                data[key]['scramble'] = scramble
-                data[key]['colors'] = self.cube
-                data[key]['collected_colors']={}
+
+                if perms[i] != 0:
+                    try:
+                        self.colors_on_photo = self.make_a_photo_and_take_colors(i, cam_down, cam_up)
+                    except Exception as e:
+                        print(e)
+                        del(cam_down)
+                        del(cam_up) 
+                        self.yaml_dump(yaml_file_path, data)  
+                        exit()
+                    # self.colors_on_photo = self.make_a_photo_and_take_colors(i) # take a new photo
+                    # self.make_photo(i)
+                else:
+                    time.sleep(0.1)
 
                 
-                scramble_cmd = ">"
-                for s in scramble:
-                    scramble_cmd += s
-                print(scramble_cmd)
-                ser.write(scramble_cmd.encode())
+                ser.write(commands[int((i)/4)].encode())
+                
+
+                if perms[i] != 0:
+                    # self.colors_on_photo = self.take_colors(i)  # read colors from taken photo
+                    self.colors_on_cube, self.cube_transform = self.assign_colors(self.colors_on_photo, perms[i])   # make an transformations of the perms
+                    data[key]['collected_colors'][i] = self.colors_on_cube
+                    # print(self.colors_on_cube)
+                    # self.draw_cube(self.colors_on_cube, i)  # draw flat view of the photos
+                    # self.draw_points_on_photo(i)
+
                 response = ""
                 while response != "done":
                     response = self.wait_for_response(ser)
-                
-
-                # while response != "button_pressed":
-                #     response = self.wait_for_response(ser)
-
-
-                
-
-                start = time.time()
-
-                perms = ['NORMAL','R1O1','R2O2','R3O3', 0,'W1Y1','W2Y2','W3Y3', 0,'B1G1','B2G2','B3G3']
-                commands = ['obrotRO', 'obrotWY', 'obrotBG']
-                
-                for i in range(len(perms)):                  
+                response = ""
                     
-
-                    if perms[i] != 0:
-                        self.colors_on_photo = self.make_a_photo_and_take_colors(i, cam_down, cam_up)
-                        # self.colors_on_photo = self.make_a_photo_and_take_colors(i) # take a new photo
-                        # self.make_photo(i)
-                    else:
-                        time.sleep(0.1)
-
-                    
-                    ser.write(commands[int((i)/4)].encode())
-                    
-
-                    if perms[i] != 0:
-                        # self.colors_on_photo = self.take_colors(i)  # read colors from taken photo
-                        self.colors_on_cube, self.cube_transform = self.assign_colors(self.colors_on_photo, perms[i])   # make an transformations of the perms
-                        data[key]['collected_colors'][i] = self.colors_on_cube
-                        # print(self.colors_on_cube)
-                        # self.draw_cube(self.colors_on_cube, i)  # draw flat view of the photos
-                        # self.draw_points_on_photo(i)
-
-                    response = ""
-                    while response != "done":
-                        response = self.wait_for_response(ser)
-                    response = ""
-                        
-                # DESCRAMBLING CUBE
-                # descramble = ">"
-                # for s in scramble[::-1]:
-                #     descramble += str(s)+"\'"
-                # print(descramble)
-                # ser.write(descramble.encode())
-                # response = ""
-                # while response != "done":
-                #     response = self.wait_for_response(ser)
-            end = time.time()
-            print("time: " + str(end - start))
-        except:
-            del(cam_down)
-            del(cam_up) 
-            self.yaml_dump(yaml_file_path, data)  
-        
-
+            # DESCRAMBLING CUBE
+            # descramble = ">"
+            # for s in scramble[::-1]:
+            #     descramble += str(s)+"\'"
+            # print(descramble)
+            # ser.write(descramble.encode())
+            # response = ""
+            # while response != "done":
+            #     response = self.wait_for_response(ser)
+        end = time.time()
+        print("time: " + str(end - start))
         del(cam_down)
         del(cam_up) 
+        
+
         self.yaml_dump(yaml_file_path, data)   
 
         # SOLVE CUBE AFTER JOB
@@ -190,7 +201,7 @@ class Cube:
 
         for move in result:
             if move != " ":
-                alg += str(move);
+                alg += str(move)
 
         ser.write(alg.encode())
 
